@@ -23,10 +23,20 @@ export const orderedDrinks = atom({
     default: {
         tea: 0,
         coffee: 0,
-        lemonade: 0
+        lemonade: 0,
+        milk: 0 //rgewg
     }
 })
 
+export const orderedFoods = atom({
+    key: 'orderedFoods',
+    default: {
+        croissant: 0,
+        muffin: 0,
+        cookie: 0,
+        maccaron: 0 
+    }
+})
 //
 // Component access: 
 //   Read/Write:

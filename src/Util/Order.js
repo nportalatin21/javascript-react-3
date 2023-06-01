@@ -1,73 +1,52 @@
-// 
-// File: Order.js
-// Auth: Martin Burolla
-// Date: 10/19/2022
-// Desc: The one and only place where the customer order is calculated.
-//
-//       NOTE: This is an academic example and should be treated as such!
-//       This logic MUST be stored on the server to prevent the client from
-//       altering the cost of the product.
-//
+import { getPriceForDrink, getPriceForFood } from './App.Config';
 
-import { getPriceForDrink } from './App.Config'
+export const buildOrder = (drinks, foods) => {
+  let total = 0;
 
-/**
- * @param {*} drinks 
- * @returns An array of objects that the customer has ordered.
- *  [
-      { 
-        item: 'tea', 
-        qty: 1, 
-        price: 2, 
-        subTotal: 2
-      }
-    ] 
- */
-export const buildOrder = (drinks) => {
-    let total = 0
-    let arrayOfDrinks = Object.keys(drinks)
-
-    const arrayOfDrinkObjects = arrayOfDrinks.map(i => {
-        return {
-            item: i,
-            qty: drinks[i]
-        }
-    })
-
-    const allItems = arrayOfDrinkObjects.map(i => {
-        total += i.qty * getPriceForDrink(i.item)
-        return {
-            ...i,
-            price: getPriceForDrink(i.item),
-            subTotal: i.qty * getPriceForDrink(i.item)
-        }
-    })
-
-    const order = allItems.filter(i => i.qty > 0)
+  const arrayOfDrinks = Object.keys(drinks).map(item => {
+    const qty = drinks[item];
+    const price = getPriceForDrink(item);
+    const subTotal = qty * price;
+    total += subTotal;
 
     return {
-        order,
-        total
-    }
-}
+      item,
+      qty,
+      price,
+      subTotal
+    };
+  });
 
-/**
- * @param {*} orders 
- * @returns The total amount of all the orders.
- */
-export const calcTotalForAllOrders = (orders) => {
-    return (orders) ? orders.map(i => i.total).reduce((a,b)=> a + b, 0) : 0
-}
+  const arrayOfFoods = Object.keys(foods).map(item => {
+    const qty = foods[item];
+    const price = getPriceForFood(item);
+    const subTotal = qty * price;
+    total += subTotal;
 
-/**
- * @param {} drinks 
- * @returns The total number of drinks the customer has ordered.
- */
-export const getTotalNumberDrinks = (drinks) => {
-    let totalDrinks = 0
-    const arrayOfDrinks = Object.keys(drinks)
-    arrayOfDrinks.forEach(i => {
-        totalDrinks += drinks[i]
-    })
-    return totalDrinks
-}
+    return {
+      item,
+      qty,
+      price,
+      subTotal
+    };
+  });
+
+  const order = [...arrayOfDrinks, ...arrayOfFoods].filter(item => item.qty > 0);
+
+  return {
+    order,
+    total
+  };
+};
+
+export const calcTotalForAllOrders = orders => {
+  return orders ? orders.reduce((total, item) => total + item.total, 0) : 0;
+};
+
+export const getTotalNumberDrinks = drinks => {
+  let totalDrinks = 0;
+  Object.values(drinks).forEach(qty => {
+    totalDrinks += qty;
+  });
+  return totalDrinks;
+};
